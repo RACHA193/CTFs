@@ -10,7 +10,7 @@ OBJECTIVE:
 Analyze an Android APK where the flag is encrypted inside an asset file, not visible in plain Java code. Use reverse engineering techniques to:
 
 - Uncover the AES encryption key at runtime  
-- Decrypt an embedded payload (PNG)  
+- Decrypt an embedded payload  
 - Reconstruct a valid DEX file from encrypted bytes  
 - Extract the flag from the recovered bytecode
 
@@ -30,15 +30,15 @@ Analysis Workflow:
 
 - Parsed 'AndroidManifest.xml' to identify entry points and components  
 - Traced execution from 'MainActivity' to 'NotificationsFragment'  
-- Located AES key loading and PNG asset reference ('google.png')  
+- Located AES key loading and asset reference   
 - Found suspicious native method call used in decryption  
 - Confirmed obfuscated class layout and byte array handling
 
 2. Dynamic Analysis
 
-- Wrote a custom Frida hook ('hook_fragment.js') to intercept the native 'Fragment(int)' method
+- Wrote a custom Frida hook to intercept the native method
 - Captured runtime AES key
-- Dumped and decrypted asset bytes from 'google.png' at offset
+- Dumped and decrypted asset bytes at offset
 - Repaired the DEX header: recalculated Adler-32 and SHA-1 hashes  
 - Loaded valid '.dex' into JADX to found cleartext flag
 
