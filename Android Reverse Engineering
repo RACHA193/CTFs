@@ -1,0 +1,56 @@
+Android Reverse Engineering – (Flag Challenge)
+
+This repository summarizes my approach to solving a static + dynamic Android reverse engineering challenge as part of the interview process. The goal was to extract a hidden flag embedded in an APK.
+
+
+Objective:
+
+Analyze an Android APK where the flag is encrypted inside an asset file, not visible in plain Java code. Use reverse engineering techniques to:
+
+- Uncover the AES encryption key at runtime  
+- Decrypt an embedded payload (PNG)  
+- Reconstruct a valid DEX file from encrypted bytes  
+- Extract the flag from the recovered bytecode
+
+
+Tools Used:
+
+- jadx for static code decompilation  
+- Frida for runtime instrumentation and native method hooking  
+- Python for asset extraction, AES decryption, and DEX header repair  
+- Rooted Android emulator for live testing  
+- adb, logcat, Wireshark for auxiliary observation
+
+
+Analysis Workflow:
+
+1. Static Analysis
+
+- Parsed 'AndroidManifest.xml' to identify entry points and components  
+- Traced execution from 'MainActivity' to 'NotificationsFragment'  
+- Located AES key loading and PNG asset reference ('google.png')  
+- Found suspicious native method call used in decryption  
+- Confirmed obfuscated class layout and byte array handling
+
+2. Dynamic Analysis
+
+- Wrote a custom Frida hook ('hook_fragment.js') to intercept the native 'Fragment(int)' method
+- Captured runtime AES key
+- Dumped and decrypted asset bytes from 'google.png' at offset
+- Repaired the DEX header: recalculated Adler-32 and SHA-1 hashes  
+- Loaded valid '.dex' into JADX to found cleartext flag
+
+
+Key Takeaways:
+
+- How to analyze APKs with heavy obfuscation and custom decryption logic  
+- Dynamic analysis is often essential when reversing native-layer secrets  
+- DEX header repair and byte-level forensics can be critical to extracting embedded payloads  
+- Combining static, dynamic, and scripting workflows makes reversing efficient and scalable
+
+
+Disclaimer:
+
+No original APK files, decompiled code, or sensitive challenge content is shared publicly. This repo only describes methodology and tooling to showcase reverse engineering workflows.
+
+
